@@ -267,9 +267,15 @@ func resourcePoolRead(d *schema.ResourceData, meta interface{}) error {
 	for _, node := range r.Basic.NodesTable {
 		nodeTerraform := make(map[string]interface{})
 		nodeTerraform["node"] = string(*node.Node)
-		nodeTerraform["weight"] = int(*node.Weight)
-		nodeTerraform["priority"] = int(*node.Priority)
-		nodeTerraform["state"] = string(*node.State)
+                if node.Weight != nil {
+		  nodeTerraform["weight"] = int(*node.Weight)
+                }
+                if node.Priority != nil {
+		  nodeTerraform["priority"] = int(*node.Priority)
+                }
+                if node.State != nil {
+		  nodeTerraform["state"] = string(*node.State)
+                }
 		nodesList = append(nodesList, nodeTerraform)
 	}
 	d.Set("node", nodesList)
@@ -337,7 +343,9 @@ func resourcePoolSet(d *schema.ResourceData, meta interface{}) error {
 
 			VtmNode := &stingray.Node{}
 			VtmNode.Node = stingray.String(terraformNode["node"].(string))
-			VtmNode.Weight = stingray.Int(terraformNode["weight"].(int))
+                        if terraformNode["weight"].(int) != 0 {
+			  VtmNode.Weight = stingray.Int(terraformNode["weight"].(int))
+                        }
 			VtmNode.Priority = stingray.Int(terraformNode["priority"].(int))
 			VtmNode.State = stingray.String(terraformNode["state"].(string))
 
